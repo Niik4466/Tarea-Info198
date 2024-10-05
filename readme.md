@@ -30,7 +30,7 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
 
    - Se ejecuta como
    ```bash
-   cd system && make && cd .. && cd programs/Text_counter && make && cd .. && cd ..
+   make
    ```
 ## Ejecucion
   * Se compila desde la carpeta raiz como:

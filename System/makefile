@@ -11,7 +11,7 @@ SRCS = src/main.cpp src/interface.cpp $(MODULES_DIR)/exeptions.cpp $(MODULES_DIR
 OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/interface.o $(OBJ_DIR)/exeptions.o $(OBJ_DIR)/stringManagment.o $(OBJ_DIR)/users.o $(OBJ_DIR)/utils.o
 
 # Nombre del ejecutable
-EXEC = ../system
+EXEC = ../pgr
 
 # Compilar todo
 all: $(EXEC)
