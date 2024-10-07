@@ -126,6 +126,12 @@ void Interface::setOptions(User user){
     this->options.push_back(&Interface::wordsTxtCount);
     sprintf(message, "%i. Contar palabras", i);
     this->optionsStrings.push_back(message);
+    i++;
+
+    this->options.push_back(&Interface::parallelCountWithThreads);
+    sprintf(message, "%i. Conteo paralelo con threads", i);
+    this->optionsStrings.push_back(message);
+    i++;
 
     interfaceMenu();
 }
@@ -185,6 +191,11 @@ void Interface::setOptions(User user, std::vector<User> users){
     this->options.push_back(&Interface::wordsTxtCount);
     sprintf(message, "%i. Contar palabras", i);
     this->optionsStrings.push_back(message);
+
+    this->options.push_back(&Interface::parallelCountWithThreads);
+    sprintf(message, "%i. Conteo paralelo con threads", i);
+    this->optionsStrings.push_back(message);
+    i++;
 
     interfaceMenu();
 }
@@ -528,4 +539,9 @@ void Interface::wordsTxtCount(){
     result = readFile(tempPath);
 
     !result.empty() ? showMessageOutput(result) : showMessageOutput ("");
+}
+
+// Ejecuta el Scrip de conteo de palabras en paralelo
+void Interface::parallelCountWithThreads() {
+    //Llamar al scrip usando system
 }

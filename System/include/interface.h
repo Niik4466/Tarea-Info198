@@ -53,7 +53,7 @@ class Interface {
         void usrVectorSumProm();
         void usrFunctionCalc();
         void wordsTxtCount();
-
+        void parallelCountWithThreads();
 
         void insertUsers();
         void listUsers();
