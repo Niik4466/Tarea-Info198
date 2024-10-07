@@ -543,5 +543,16 @@ void Interface::wordsTxtCount(){
 
 // Ejecuta el Scrip de conteo de palabras en paralelo
 void Interface::parallelCountWithThreads() {
-    //Llamar al scrip usando system
+     // Construye la llamada al script
+    std::string command = "./controlFather.sh";
+
+    // Ejecuta el script
+    int result = system(command.c_str());
+
+    // Maneja la salida del script
+    if (result == 0) {
+        std::cout << "Script ejecutado exitosamente." << std::endl;
+    } else {
+        std::cerr << "Error al ejecutar el script." << std::endl;
+    }
 }
