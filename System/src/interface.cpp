@@ -128,11 +128,6 @@ void Interface::setOptions(User user){
     this->optionsStrings.push_back(message);
     i++;
 
-    this->options.push_back(&Interface::parallelCountWithThreads);
-    sprintf(message, "%i. Conteo paralelo con threads", i);
-    this->optionsStrings.push_back(message);
-    i++;
-
     interfaceMenu();
 }
 
@@ -194,6 +189,11 @@ void Interface::setOptions(User user, std::vector<User> users){
 
     this->options.push_back(&Interface::parallelCountWithThreads);
     sprintf(message, "%i. Conteo paralelo con threads", i);
+    this->optionsStrings.push_back(message);
+    i++;
+
+    this->options.push_back(&Interface::createInvertedIndex);
+    sprintf(message, "%i. Crear indice invertido", i);
     this->optionsStrings.push_back(message);
     i++;
 
@@ -541,10 +541,26 @@ void Interface::wordsTxtCount(){
     !result.empty() ? showMessageOutput(result) : showMessageOutput ("");
 }
 
-// Ejecuta el Scrip de conteo de palabras en paralelo
+// Ejecuta el Script de conteo de palabras en paralelo
 void Interface::parallelCountWithThreads() {
      // Construye la llamada al script
     std::string command = "./controlFather.sh";
+
+    // Ejecuta el script
+    int result = system(command.c_str());
+
+    // Maneja la salida del script
+    if (result == 0) {
+        std::cout << "Script ejecutado exitosamente." << std::endl;
+    } else {
+        std::cerr << "Error al ejecutar el script." << std::endl;
+    }
+}
+
+//Ejucate el Script para crear el indice invertido
+void Iterface::createInvertedIndex(){
+    // Construye la llamada al script
+    std::string command = "./invertedIndex.sh";
 
     // Ejecuta el script
     int result = system(command.c_str());
