@@ -557,7 +557,7 @@ void Interface::parallelCountWithThreads() {
     }
 }
 
-//Ejucate el Script para crear el indice invertido
+//Ejecuta el Script para crear el indice invertido
 void Iterface::createInvertedIndex(){
     // Construye la llamada al script
     std::string command = "./invertedIndex.sh";
