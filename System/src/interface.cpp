@@ -598,11 +598,12 @@ void Interface::parallelCountWithThreads() {
 
 //Ejecuta el Script para crear el indice invertido
 void Interface::createInvertedIndex() {
+
     // Verifica si la función parallelCountWithThreads ya se ha ejecutado
-    if (!parallelCountExecuted) {
+    /*if (!parallelCountExecuted) {
         showMessageOutput("Debe ejecutar primero la opción de conteo paralelo con threads.");
         return;
-    }
+    }*/
 
     // Construye la llamada al script
     std::string invertedIndexPath = getenv("INVERTED_INDEX_PATH") ? getenv("INVERTED_INDEX_PATH") : "";
@@ -612,8 +613,8 @@ void Interface::createInvertedIndex() {
     }
 
     std::string extension = getenv("EXTENSION") ? getenv("EXTENSION") : "";
-    std::string archivosDir = getenv("ARCHIVOS_DIR") ? getenv("ARCHIVOS_DIR") : "";
-    std::string salidaDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
+    std::string archivosDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
+    std::string salidaDir = getenv("INVERTED_INDEX") ? getenv("INVERTED_INDEX") : "";
 
     if (extension.empty() || archivosDir.empty() || salidaDir.empty()) {
         showMessageOutput("No se encontraron las variables de entorno necesarias");
