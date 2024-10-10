@@ -598,6 +598,12 @@ void Interface::parallelCountWithThreads() {
 
 //Ejecuta el Script para crear el indice invertido
 void Interface::createInvertedIndex() {
+    // Verifica si la función parallelCountWithThreads ya se ha ejecutado
+    if (!parallelCountExecuted) {
+        showMessageOutput("Debe ejecutar primero la opción de conteo paralelo con threads.");
+        return;
+    }
+
     // Construye la llamada al script
     std::string invertedIndexPath = getenv("INVERTED_INDEX_PATH") ? getenv("INVERTED_INDEX_PATH") : "";
     if(invertedIndexPath.empty()){
