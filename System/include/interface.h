@@ -12,6 +12,9 @@
 #include <cstdlib>
 #include <unistd.h>
 
+#include <iostream>
+#include <filesystem>
+
 class Interface {
     private:
         WINDOW* output_win;

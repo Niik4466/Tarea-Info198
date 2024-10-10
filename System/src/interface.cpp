@@ -1,6 +1,5 @@
 #include "interface.h"
 
-
 // Constructor unico de la interfaz
 Interface::Interface(std::string &phrase, std::vector<int> &list, std::string &num, User user, std::vector<User> &users){
     
@@ -35,7 +34,7 @@ Interface::Interface(std::string &phrase, std::vector<int> &list, std::string &n
     char message[50];
 
     // Creamos la ventanita del header
-    header_win = newwin(height/4, width, 0, 0);
+    header_win = newwin(height/10, width, 0, 0);
 
     sprintf(message, "SISTEMA De jueguete\t PID = %i", getpid());
     mvwprintw(header_win, 1, 1, message);
@@ -52,18 +51,18 @@ Interface::Interface(std::string &phrase, std::vector<int> &list, std::string &n
     curs_set(1); // Muestra el puntero del teclado en la cajita de comandos
 
     // Crear ventanas para el menú y para la entrada de comandos
-    menu_win = newwin(height / 4, width, height / 2, 0);
+    menu_win = newwin(4 * height / 10, width, height * 5/10, 0);
 
     wrefresh (menu_win); // refrescar el menu
 
     // Creamos la ventanita de output de comandos
-    output_win = newwin(height/4, width, height /4, 0);
+    output_win = newwin(height *4/10, width, height /10, 0);
     box(output_win, ' ', '#');
     mvwprintw(output_win, 1, 1, "Respuesta de la ejecucion:");
     wrefresh(output_win);
 
     // Creamos la ventana para el input de comandos
-    input_win = newwin(height/4, width, height *3/4, 0);
+    input_win = newwin(height/10, width, height *9/10, 0);
     mvwprintw(output_win, 1, 1, "Ingrese opcion: ");
     wrefresh(input_win);
 }
@@ -186,6 +185,7 @@ void Interface::setOptions(User user, std::vector<User> users){
     this->options.push_back(&Interface::wordsTxtCount);
     sprintf(message, "%i. Contar palabras", i);
     this->optionsStrings.push_back(message);
+    i++;
 
     this->options.push_back(&Interface::parallelCountWithThreads);
     sprintf(message, "%i. Conteo paralelo con threads", i);
@@ -544,21 +544,54 @@ void Interface::wordsTxtCount(){
 // Ejecuta el Script de conteo de palabras en paralelo
 void Interface::parallelCountWithThreads() {
      // Construye la llamada al script
-    std::string command = "./controlFather.sh";
+    std::string countThreadPath = getenv("PARALLEL_COUNT_PATH") ? getenv("PARALLEL_COUNT_PATH") : "";
+    if(countThreadPath.empty()){
+        showMessageOutput("No se encontro el programa");
+        return;
+    }
+    std::string extension = getenv("EXTENSION") ? getenv("EXTENSION") : "";
+    std::string archivosDir = getenv("ARCHIVOS_DIR") ? getenv("ARCHIVOS_DIR") : "";
+    std::string salidaDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
+    std::string cantidadThreads = getenv("CANTIDAD_THREAD") ? getenv("CANTIDAD_THREAD") : "";
+    std::string mapaArchivo = getenv("MAPA_ARCHIVO") ? getenv("MAPA_ARCHIVO") : "";
+    std::string stopWords = getenv("STOP_WORD") ? getenv("STOP_WORD") : "";
 
-    // Ejecuta el script
-    int result = system(command.c_str());
+    if (extension.empty() || archivosDir.empty() || salidaDir.empty() || cantidadThreads.empty() || mapaArchivo.empty() || stopWords.empty()) {
+        showMessageOutput("No se encontraron las variables de entorno necesarias");
+        return;
+    }
+    // Verifica que las rutas de las variables existan
+    if (!std::filesystem::exists(countThreadPath)) {
+        showMessageOutput("El path de conteo paralelo no existe.");
+        return;
+    }
+    if (!std::filesystem::exists(archivosDir)) {
+        showMessageOutput("El path de archivos no existe.");
+        return;
+    }
+    if (!std::filesystem::exists(salidaDir)) {
+        showMessageOutput("El path de salida no existe.");
+        return;
+    }
+    if (!std::filesystem::exists(mapaArchivo)) {
+        showMessageOutput("El path del mapa de archivo no existe.");
+        return;
+    }
+    if (!std::filesystem::exists(stopWords)) {
+        showMessageOutput("El path de stop words no existe.");
+        return;
+    }
+    // Construye la llamada al script
+    std::string call = countThreadPath + " " + extension + " " + archivosDir + " " + salidaDir + " " + cantidadThreads + " " + mapaArchivo + " " + stopWords;
+    showMessageOutput("Ejecutando programa...");
+    std::string result = executeWithBuffer(call);
 
     // Maneja la salida del script
-    if (result == 0) {
-        std::cout << "Script ejecutado exitosamente." << std::endl;
-    } else {
-        std::cerr << "Error al ejecutar el script." << std::endl;
-    }
+    showMessageOutput(result);
 }
 
 //Ejecuta el Script para crear el indice invertido
-void Iterface::createInvertedIndex(){
+void Interface::createInvertedIndex(){
     // Construye la llamada al script
     std::string command = "./invertedIndex.sh";
 
