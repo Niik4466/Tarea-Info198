@@ -594,8 +594,12 @@ void Interface::parallelCountWithThreads() {
     std::string result = executeWithBuffer(call);
 
     // Maneja la salida del script
-    showMessageOutput(result);
-    this->parallelCountExecuted = true; // Marca la ejecución de conteo paralelo
+    if (result.empty()) {
+        showMessageOutput("El script no se ejecuto con exito.");
+    } else {
+        showMessageOutput("El script se ejecuto con exito. Resultado:\n" + result);
+        this->parallelCountExecuted = true; // Marca la ejecución de conteo paralelo
+    }
 }
 
 //Ejecuta el Script para crear el indice invertido
@@ -645,5 +649,9 @@ void Interface::createInvertedIndex() {
     std::string result = executeWithBuffer(call);
 
     // Maneja la salida del script
-    showMessageOutput(result);
+    if (result.empty()) {
+        showMessageOutput("El script no se ejecuto con exito.");
+    } else {
+        showMessageOutput("El script se ejecuto con exito y el archivo de salida quedo ubicado en: ." + result);
+    }
 }
