@@ -51,12 +51,12 @@ Interface::Interface(std::string &phrase, std::vector<int> &list, std::string &n
     curs_set(1); // Muestra el puntero del teclado en la cajita de comandos
 
     // Crear ventanas para el menú y para la entrada de comandos
-    menu_win = newwin(4 * height / 10, width, height * 5/10, 0);
+    menu_win = newwin(2 * height / 10, width, height * 7/10, 0);
 
     wrefresh (menu_win); // refrescar el menu
 
     // Creamos la ventanita de output de comandos
-    output_win = newwin(height *4/10, width, height /10, 0);
+    output_win = newwin(height *6/10, width, height /10, 0);
     box(output_win, ' ', '#');
     mvwprintw(output_win, 1, 1, "Respuesta de la ejecucion:");
     wrefresh(output_win);
@@ -549,6 +549,7 @@ void Interface::parallelCountWithThreads() {
         showMessageOutput("No se encontro el programa");
         return;
     }
+
     std::string extension = getenv("EXTENSION") ? getenv("EXTENSION") : "";
     std::string archivosDir = getenv("ARCHIVOS_DIR") ? getenv("ARCHIVOS_DIR") : "";
     std::string salidaDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
@@ -565,24 +566,29 @@ void Interface::parallelCountWithThreads() {
         showMessageOutput("El path de conteo paralelo no existe.");
         return;
     }
+
     if (!std::filesystem::exists(archivosDir)) {
         showMessageOutput("El path de archivos no existe.");
         return;
     }
+
     if (!std::filesystem::exists(salidaDir)) {
         showMessageOutput("El path de salida no existe.");
         return;
     }
+
     if (!std::filesystem::exists(mapaArchivo)) {
         showMessageOutput("El path del mapa de archivo no existe.");
         return;
     }
+
     if (!std::filesystem::exists(stopWords)) {
         showMessageOutput("El path de stop words no existe.");
         return;
     }
+
     // Construye la llamada al script
-    std::string call = countThreadPath + " " + extension + " " + archivosDir + " " + salidaDir + " " + cantidadThreads + " " + mapaArchivo + " " + stopWords;
+    std::string call = countThreadPath + "/controlFather.sh " + extension + " " + archivosDir + " " + salidaDir + " " + cantidadThreads + " " + mapaArchivo + " " + stopWords + " " + countThreadPath + "/children.sh" + " 2> \"logs.txt\" ";
     showMessageOutput("Ejecutando programa...");
     std::string result = executeWithBuffer(call);
 
