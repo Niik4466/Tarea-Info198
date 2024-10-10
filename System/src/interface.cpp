@@ -597,17 +597,44 @@ void Interface::parallelCountWithThreads() {
 }
 
 //Ejecuta el Script para crear el indice invertido
-void Interface::createInvertedIndex(){
+void Interface::createInvertedIndex() {
     // Construye la llamada al script
-    std::string command = "./invertedIndex.sh";
+    std::string invertedIndexPath = getenv("INVERTED_INDEX_PATH") ? getenv("INVERTED_INDEX_PATH") : "";
+    if(invertedIndexPath.empty()){
+        showMessageOutput("No se encontro el programa");
+        return;
+    }
 
-    // Ejecuta el script
-    int result = system(command.c_str());
+    std::string extension = getenv("EXTENSION") ? getenv("EXTENSION") : "";
+    std::string archivosDir = getenv("ARCHIVOS_DIR") ? getenv("ARCHIVOS_DIR") : "";
+    std::string salidaDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
+
+    if (extension.empty() || archivosDir.empty() || salidaDir.empty()) {
+        showMessageOutput("No se encontraron las variables de entorno necesarias");
+        return;
+    }
+
+    // Verifica que las rutas de las variables existan
+    if (!std::filesystem::exists(invertedIndexPath)) {
+        showMessageOutput("El path del script de índice invertido no existe.");
+        return;
+    }
+
+    if (!std::filesystem::exists(archivosDir)) {
+        showMessageOutput("El path de archivos no existe.");
+        return;
+    }
+
+    if (!std::filesystem::exists(salidaDir)) {
+        showMessageOutput("El path de salida no existe.");
+        return;
+    }
+
+    // Construye la llamada al script
+    std::string call = invertedIndexPath + "/invertedIndex.sh " + extension + " " + archivosDir + " " + salidaDir + " 2> \"logs.txt\" ";
+    showMessageOutput("Ejecutando programa...");
+    std::string result = executeWithBuffer(call);
 
     // Maneja la salida del script
-    if (result == 0) {
-        std::cout << "Script ejecutado exitosamente." << std::endl;
-    } else {
-        std::cerr << "Error al ejecutar el script." << std::endl;
-    }
+    showMessageOutput(result);
 }
