@@ -12,3 +12,4 @@ for archivo in $(find "$archivos_dir" -maxdepth 1 -name "*$extension"); do
   # Luego del done, tomamos todo lo impreso desde el buffer en el ciclo for y lo transformamos a los indices invertidos
 done | awk -F ';' '{key=$1; value=$2; result[key]=result[key] value ";" } END {for (k in result) print k ";" result[k]}' | sort -u > "$inverted_index_dir/$1.INDEX"
 
+echo "$inverted_index_dir/$1.INDEX"
