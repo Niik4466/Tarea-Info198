@@ -28,6 +28,7 @@ class Interface {
         std::vector<std::string> optionsStrings;
         User user;
         std::vector<User> users;
+        bool parallelCountExecuted;
 
 
         Interface(std::string &phrase, std::vector<int> &list, std::string &num, User user, std::vector<User> &users);

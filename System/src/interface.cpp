@@ -10,6 +10,7 @@ Interface::Interface(std::string &phrase, std::vector<int> &list, std::string &n
     this->num = num;
     this->user = user;
     this->users = users;
+    this->parallelCountExecuted = false;    // Inicializa la variable de control de ejecución de conteo paralelo
     // Iniciamos ncurses
 
     initscr();      // Inicializar ncurses
@@ -594,16 +595,17 @@ void Interface::parallelCountWithThreads() {
 
     // Maneja la salida del script
     showMessageOutput(result);
+    this->parallelCountExecuted = true; // Marca la ejecución de conteo paralelo
 }
 
 //Ejecuta el Script para crear el indice invertido
 void Interface::createInvertedIndex() {
 
     // Verifica si la función parallelCountWithThreads ya se ha ejecutado
-    /*if (!parallelCountExecuted) {
-        showMessageOutput("Debe ejecutar primero la opción de conteo paralelo con threads.");
+    if (!parallelCountExecuted) {   // Si no se ha ejecutado, muestra un mensaje de error
+        showMessageOutput("Debe ejecutar primero la opcion de conteo paralelo con threads.");
         return;
-    }*/
+    }
 
     // Construye la llamada al script
     std::string invertedIndexPath = getenv("INVERTED_INDEX_PATH") ? getenv("INVERTED_INDEX_PATH") : "";
