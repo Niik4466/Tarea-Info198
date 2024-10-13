@@ -1,4 +1,5 @@
-#include "utils.h"
+#include <string>
+#include <iostream>
 #include <thread>
 #include <queue>
 #include <vector>
@@ -27,6 +28,15 @@ std::queue<std::string> createPathQueue(std::filesystem::path filesPath, std::st
   return pathQueue;
 }
 
+// Trabajo principal del programa, recibe los argumentos necesarios para ser el conteo y le relega el trabajo a un script en bash
+void textCount(std::string childrenPath, std::string filePath, std::string outputPath, std::string idPath, std::string extension, std::string stopWordsPath){
+  std::string call = childrenPath + " \"" + filePath + "\" " + outputPath + " " + idPath + " " + extension + " " + stopWordsPath;
+  int exit_value = system(call.c_str());
+  if (exit_value != 0){
+    printf("El conteo de %s no se pudo llevar a cabo debido a un error\n", filePath.c_str());
+  }
+}
+
 // Define el trabajo que realizara cada thread (Aqui se encuentra el sacar datos del queue y el uso de mutex)
 void threadWork(int id, std::queue<std::string>& pathQueue, std::mutex& pathQueueMutex,  std::string childrenPath, std::string outputPath, std::string idPath, std::string extension, std::string stopWordsPath){
   while(!pathQueue.empty()){
@@ -45,21 +55,17 @@ void threadWork(int id, std::queue<std::string>& pathQueue, std::mutex& pathQueu
   }
 }
 
-// Trabajo principal del programa, recibe los argumentos necesarios para ser el conteo y le relega el trabajo a un script en bash
-void textCount(std::string childrenPath, std::string filePath, std::string outputPath, std::string idPath, std::string extension, std::string stopWordsPath){
-  std::string call = childrenPath + " " + filePath + " " + outputPath + " " + idPath + " " + extension + " " + stopWordsPath;
-  int exit_value = system(call.c_str());
-  if (exit_value != 0){
-    printf("El conteo de $s no se pudo llevar a cabo debido a un error\n", filePath);
-  }
-}
-
 int main(int argc, char** argv){
+  if (argc != 7){
+    printf("Error, faltan argumentos\n");
+    printf("El programa se ejecuta como: ./prog <directorio de archivos a contar> <directorio de salida> <directorio donde se ubican las id> <extension> <direccion de archivo stopWords> <Cantidad de threads>/n");
+    exit(EXIT_FAILURE);
+  }
   // Seteamos las variables que vienen desde argumento
   std::filesystem::path thisExecutablePath = argv[0];
   std::string thisPath = thisExecutablePath.parent_path().string();
-  std::string childrenPath = thisPath + "/children.sh";
-  std::string createIDPath = thisPath + "/createID.sh";
+  std::string childrenPath = thisPath + "/src/children.sh";
+  std::string createIDPath = thisPath + "/src/createID.sh";
   std::string filesPath = argv[1];
   std::string outputPath = argv[2];
   std::string idPath = argv[3];
@@ -69,18 +75,21 @@ int main(int argc, char** argv){
   
   // Creamos las ID's antes de realizar el procesamiento paralelo
   std::string call = createIDPath + " " + extension + " " + filesPath + " " + idPath;
+  system(call.c_str());
 
   // Creamos nuestra cola de archivos paths a procesar.
   std::queue<std::string> pathQueue = createPathQueue(filesPath, extension);
   // Creamos el mutex para el acceso a la cola
   std::mutex pathQueueMutex;
 
-  // Creamos los threads
+  // Creamos el vector de threads
   std::vector<std::thread> threads;
   
+  // Creamos los threads individualmente, asignandole el trabajo a cada uno (Funcion que ejecutaran)
   for (int i = 0; i < cantThreads; i++)
     threads.emplace_back(threadWork, i, std::ref(pathQueue), std::ref(pathQueueMutex), childrenPath, outputPath, idPath, extension, stopWordsPath);
-
+  
+  // Aniadimos los threads al hilo principal.
   for (std::thread& thread : threads)
     if (thread.joinable()) thread.join();
 
