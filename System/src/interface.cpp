@@ -52,12 +52,12 @@ Interface::Interface(std::string &phrase, std::vector<int> &list, std::string &n
     curs_set(1); // Muestra el puntero del teclado en la cajita de comandos
 
     // Crear ventanas para el menú y para la entrada de comandos
-    menu_win = newwin(2 * height / 10, width, height * 7/10, 0);
+    menu_win = newwin(3 * height / 10, width, height * 6/10, 0);
 
     wrefresh (menu_win); // refrescar el menu
 
     // Creamos la ventanita de output de comandos
-    output_win = newwin(height *6/10, width, height /10, 0);
+    output_win = newwin(height *5/10, width, height /10, 0);
     box(output_win, ' ', '#');
     mvwprintw(output_win, 1, 1, "Respuesta de la ejecucion:");
     wrefresh(output_win);
@@ -542,63 +542,40 @@ void Interface::wordsTxtCount(){
     !result.empty() ? showMessageOutput(result) : showMessageOutput ("");
 }
 
-// Ejecuta el Script de conteo de palabras en paralelo
+// Ejecuta el programa Text_counter_threads en paralelo
 void Interface::parallelCountWithThreads() {
-     // Construye la llamada al script
-    std::string countThreadPath = getenv("PARALLEL_COUNT_PATH") ? getenv("PARALLEL_COUNT_PATH") : "";
-    if(countThreadPath.empty()){
+    std::string result;
+
+    showMessageOutput("Ejecutando programa...");
+
+    std::string parallelCountPath = getenv("PARALLEL_COUNT_PATH") ? getenv("PARALLEL_COUNT_PATH") : "";
+
+    if(parallelCountPath.empty()){
         showMessageOutput("No se encontro el programa");
         return;
     }
 
     std::string extension = getenv("EXTENSION") ? getenv("EXTENSION") : "";
     std::string archivosDir = getenv("ARCHIVOS_DIR") ? getenv("ARCHIVOS_DIR") : "";
-    std::string salidaDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
-    std::string cantidadThreads = getenv("CANTIDAD_THREAD") ? getenv("CANTIDAD_THREAD") : "";
+    std::string cantidadThread = getenv("CANTIDAD_THREAD") ? getenv("CANTIDAD_THREAD") : "";
     std::string mapaArchivo = getenv("MAPA_ARCHIVO") ? getenv("MAPA_ARCHIVO") : "";
-    std::string stopWords = getenv("STOP_WORD") ? getenv("STOP_WORD") : "";
+    std::string stopWord = getenv("STOP_WORD") ? getenv("STOP_WORD") : "";
+    std::string outputDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
 
-    if (extension.empty() || archivosDir.empty() || salidaDir.empty() || cantidadThreads.empty() || mapaArchivo.empty() || stopWords.empty()) {
+    if (extension.empty() || archivosDir.empty() || cantidadThread.empty() || mapaArchivo.empty() || stopWord.empty() || outputDir.empty()) {
         showMessageOutput("No se encontraron las variables de entorno necesarias");
         return;
     }
-    // Verifica que las rutas de las variables existan
-    if (!std::filesystem::exists(countThreadPath)) {
-        showMessageOutput("El path de conteo paralelo no existe.");
-        return;
-    }
 
-    if (!std::filesystem::exists(archivosDir)) {
-        showMessageOutput("El path de archivos no existe.");
-        return;
-    }
+    std::string call = parallelCountPath + "/text_counter_threads " + archivosDir + " " + outputDir + " " + mapaArchivo + " " + extension + " " + stopWord + " " + cantidadThread;
 
-    if (!std::filesystem::exists(salidaDir)) {
-        showMessageOutput("El path de salida no existe.");
-        return;
-    }
+    result = executeWithBuffer(call);
 
-    if (!std::filesystem::exists(mapaArchivo)) {
-        showMessageOutput("El path del mapa de archivo no existe.");
-        return;
-    }
-
-    if (!std::filesystem::exists(stopWords)) {
-        showMessageOutput("El path de stop words no existe.");
-        return;
-    }
-
-    // Construye la llamada al script
-    std::string call = countThreadPath + "/controlFather.sh " + extension + " " + archivosDir + " " + salidaDir + " " + cantidadThreads + " " + mapaArchivo + " " + stopWords + " " + countThreadPath + "/children.sh" + " 2> \"logs.txt\" ";
-    showMessageOutput("Ejecutando programa...");
-    std::string result = executeWithBuffer(call);
-
-    // Maneja la salida del script
-    if (result.empty()) {
-        showMessageOutput("El script no se ejecuto con exito.");
+    if (!result.empty()) {
+        showMessageOutput(result);
+        parallelCountExecuted = true;  // Marca que la función se ha ejecutado
     } else {
-        showMessageOutput("El script se ejecuto con exito. Resultado:\n" + result);
-        this->parallelCountExecuted = true; // Marca la ejecución de conteo paralelo
+        showMessageOutput("El programa no se ejecuto con exito.");
     }
 }
 

@@ -68,16 +68,61 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
 
      6. Contar palabras:
          - Crea un proceso externo el cual se encarga de contar las palabras de los archivos pertenecientes a una carpeta seleccionada por el usuario.
-         - El programa llamado es textCounter, el cual exige al usuario ingresar la extension de los archivos a leer, ruta donde se encuentra su carpeta de archivos y ruta en donde se guardaran los archivos.
+         - El programa llamado es `textCounter`, el cual exige al usuario ingresar la extension de los archivos a leer, ruta donde se encuentra su carpeta de archivos y ruta en donde se guardaran los archivos.
          - Si no hay archivos entonces no hace nada, si un texto esta vacio o no contiene palabras. Entonces no guarda el conteo de palabras e indica que hay 0 palabras.
 
 2) De administrador:
   
-    1. Ingresar nuevo usuario:
-        - Crea un nuevo usuario con los datos: nombre, contrasenia y rol de usuario.
-      
-    2. Listar usuarios:
-        - Muestra el nombre de los usuarios disponibles.
+   1. Ingresar nuevo usuario:
+      - Crea un nuevo usuario con los datos: nombre, contrasenia y rol de usuario.
+     
+   2. Listar usuarios:
+      - Muestra el nombre de los usuarios disponibles.
 
-    3. Eliminar Usuarios:
-        - Elimina un usuario teniendo el nombre del usuario, solo se pueden eliminar usuarios genericos.
+   3. Eliminar Usuarios:
+      - Elimina un usuario teniendo el nombre del usuario, solo se pueden eliminar usuarios genericos.
+
+   4. Conteo paralelo con threads:
+      - Ejecuta el programa `Text_counter_threads` en paralelo para contar palabras en archivos de texto utilizando múltiples threads. Requiere la extensión de los archivos, el directorio de archivos, y la cantidad de threads a utilizar.
+
+   5. Crear indice invertido:
+      - Ejecuta el programa `Inverted_Index` para crear un índice invertido de los archivos de texto procesados. Requiere la extensión de los archivos, el directorio de archivos, y el directorio de salida para los resultados.
+      
+ ### Variables de Entorno (.env)
+
+   * El archivo `.env` contiene las siguientes variables de entorno que configuran el comportamiento del programa:
+
+      - **HEIGHT**: Altura de la pantalla (por defecto: `DEFAULT`).
+      - **WIDTH**: Ancho de la pantalla (por defecto: `DEFAULT`).
+      - **SEP**: Separador de vectores (por defecto: `;`).
+      - **USER_PATH**: Ruta al archivo de usuarios.
+      - **TXTCOUNTER_PATH**: Ruta al programa `Text_counter`.
+      - **TEMP_PATH**: Ruta al directorio temporal.
+      - **PARALLEL_COUNT_PATH**: Ruta al programa `Text_counter_Threads`.
+      - **INVERTED_INDEX_PATH**: Ruta al programa `Inverted_Index`.
+      - **EXTENSION**: Extensión de los archivos a procesar (por defecto: `.txt`).
+      - **ARCHIVOS_DIR**: Directorio de archivos a procesar.
+      - **CANTIDAD_THREAD**: Cantidad de threads a utilizar (por defecto: `4`).
+      - **MAPA_ARCHIVO**: Ruta al archivo de ID de threads.
+      - **STOP_WORD**: Ruta al archivo de palabras de parada.
+      - **INVERTED_INDEX**: Ruta al índice invertido.
+      - **OUTPUT_DIR**: Directorio de salida para los resultados de los threads.
+
+      ### Programas Externos
+
+      El programa utiliza los siguientes programas externos para realizar tareas específicas:
+
+      1. **Text_counter**:
+         - **Descripción**: Cuenta las palabras de los archivos de texto en un directorio especificado.
+         - **Ruta**: Definida en `TXTCOUNTER_PATH`.
+         - **Uso**: Se ejecuta como un proceso hijo para contar palabras en archivos de texto.
+
+      2. **Text_counter_Threads**:
+         - **Descripción**: Cuenta las palabras de los archivos de texto en paralelo utilizando múltiples threads.
+         - **Ruta**: Definida en `PARALLEL_COUNT_PATH`.
+         - **Uso**: Se ejecuta en paralelo para mejorar el rendimiento en el conteo de palabras.
+      
+      3. **Inverted_Index**:
+         - **Descripción**: Crea un índice invertido de los archivos de texto procesados.
+         - **Ruta**: Definida en `INVERTED_INDEX_PATH`.
+         - **Uso**: Se ejecuta para generar un índice invertido que permite búsquedas rápidas de palabras en los archivos de texto.
