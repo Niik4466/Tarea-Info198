@@ -86,7 +86,7 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
       - Ejecuta el programa `Text_counter_threads` en paralelo para contar palabras en archivos de texto utilizando múltiples threads. Requiere la extensión de los archivos, el directorio de archivos, y la cantidad de threads a utilizar.
 
    5. Crear indice invertido:
-      - Ejecuta el programa `Inverted_Index` para crear un índice invertido de los archivos de texto procesados. Requiere la extensión de los archivos, el directorio de archivos, y el directorio de salida para los resultados.
+      - Ejecuta el programa `Inverted_Index` para crear un índice invertido de los archivos de texto procesados. Requiere la extensión de los archivos, que previamente se haya ejecutado la opcion "Conteo paralelo con threads", el directorio de archivos, y el directorio de salida para los resultados.
       
  ### Variables de Entorno (.env)
 
