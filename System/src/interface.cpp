@@ -198,6 +198,11 @@ void Interface::setOptions(User user, std::vector<User> users){
     this->optionsStrings.push_back(message);
     i++;
 
+    this->options.push_back(&Interface::performanceAnalysis);
+    sprintf(message, "%i. Analisis de performance", i);
+    this->optionsStrings.push_back(message);
+    i++;
+
     interfaceMenu();
 }
 
@@ -630,5 +635,54 @@ void Interface::createInvertedIndex() {
         showMessageOutput("El script no se ejecuto con exito.");
     } else {
         showMessageOutput("El script se ejecuto con exito y el archivo de salida quedo ubicado en: ." + result);
+    }
+}
+
+// Ejecuta el programa de analisis de performance
+void Interface::performanceAnalysis() {
+// Obtener las variables de entorno necesarias
+    std::string arrayThreadsStr = getenv("ARRAY_THREADS") ? getenv("ARRAY_THREADS") : "";
+    std::string repetitions = getenv("REPETICIONES") ? getenv("REPETICIONES") : "";
+    std::string datosPath = getenv("DATOS_PATH") ? getenv("DATOS_PATH") : "";
+    std::string textCounterThreadsPath = getenv("PARALLEL_COUNT_PATH") ? getenv("PARALLEL_COUNT_PATH") : "";
+    std::string archivosDir = getenv("ARCHIVOS_DIR") ? getenv("ARCHIVOS_DIR") : "";
+    std::string outputDir = getenv("OUTPUT_DIR") ? getenv("OUTPUT_DIR") : "";
+    std::string idPath = getenv("MAPA_ARCHIVO") ? getenv("MAPA_ARCHIVO") : "";
+    std::string extension = getenv("EXTENSION") ? getenv("EXTENSION") : "";
+    std::string stopWordsPath = getenv("STOP_WORD") ? getenv("STOP_WORD") : "";
+    std::string ejecutadorPath = getenv("EJECUTADOR_PATH") ? getenv("EJECUTADOR_PATH") : "";
+    std::string analizerPath = getenv("ANALISADOR_PATH") ? getenv("ANALISADOR_PATH") : "";
+    std::string graphPath = getenv("GRAFICO_PATH") ? getenv("GRAFICO_PATH") : "";
+
+    if (arrayThreadsStr.empty() || repetitions.empty() || datosPath.empty() || textCounterThreadsPath.empty() || archivosDir.empty() || outputDir.empty() || idPath.empty() || extension.empty() || stopWordsPath.empty() || ejecutadorPath.empty()) {
+        showMessageOutput("No se encontraron las variables de entorno necesarias");
+        return;
+    }
+
+     // Construir el comando usando ostringstream
+    std::ostringstream call;
+    call << ejecutadorPath << "/ejecutador " 
+         << textCounterThreadsPath << " "   //1
+         << archivosDir << " "              //2
+         << outputDir << " "                //3
+         << idPath << " "                   //4
+         << extension << " "                //5
+         << stopWordsPath << " "            //6
+         << repetitions << " "              //7
+         << datosPath << " "                //8
+         << analizerPath << " "             //9
+         << graphPath << " "                //10
+         << arrayThreadsStr;                //11
+
+    showMessageOutput("Ejecutando programa...");
+    
+    std::string output = executeWithBuffer(call.str());    
+    // Verificar el resultado de la ejecución
+    if (output.find("Programa no encontrado") == std::string::npos) {
+        showMessageOutput("El programa se ejecuto con exito los resultado quedaron en: " + datosPath);
+    } else {
+        std::ostringstream errorMessage;
+        errorMessage << "El programa no se ejecuto con exito. Salida: " << output;
+        showMessageOutput(errorMessage.str());
     }
 }

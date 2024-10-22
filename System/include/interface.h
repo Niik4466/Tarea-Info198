@@ -59,6 +59,7 @@ class Interface {
         void wordsTxtCount();
         void parallelCountWithThreads();
         void createInvertedIndex();
+        void performanceAnalysis();
 
         void insertUsers();
         void listUsers();

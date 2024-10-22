@@ -107,7 +107,12 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
       - **STOP_WORD**: Ruta al archivo de palabras de parada.
       - **INVERTED_INDEX**: Ruta al índice invertido.
       - **OUTPUT_DIR**: Directorio de salida para los resultados de los threads.
-
+      - **DATOS_PATH**: Ruta al directorio de datos de rendimiento.
+      - **GRAFICO_PATH**: Ruta al directorio de gráficos de rendimiento.
+      - **EJECUTADOR_PATH**: Ruta al programa `Ejecutador`.
+      - **ANALISADOR_PATH**: Ruta al programa `Analisador`.
+      - **ARRAY_THREADS**: Array de cantidades de threads para pruebas de rendimiento.
+      - **REPETICIONES**: Número de repeticiones para pruebas de rendimiento.
       ### Programas Externos
 
       El programa utiliza los siguientes programas externos para realizar tareas específicas:
