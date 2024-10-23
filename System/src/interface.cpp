@@ -128,6 +128,11 @@ void Interface::setOptions(User user){
     this->optionsStrings.push_back(message);
     i++;
 
+    this->options.push_back(&Interface::planificador);
+    sprintf(message, "%i. PLANIFICADOR", i);
+    this->optionsStrings.push_back(message);
+    i++;
+
     interfaceMenu();
 }
 
@@ -200,6 +205,11 @@ void Interface::setOptions(User user, std::vector<User> users){
 
     this->options.push_back(&Interface::performanceAnalysis);
     sprintf(message, "%i. Analisis de performance", i);
+    this->optionsStrings.push_back(message);
+    i++;
+
+    this->options.push_back(&Interface::planificador);
+    sprintf(message, "%i. PLANIFICADOR", i);
     this->optionsStrings.push_back(message);
     i++;
 
@@ -685,4 +695,47 @@ void Interface::performanceAnalysis() {
         errorMessage << "El programa no se ejecuto con exito. Salida: " << output;
         showMessageOutput(errorMessage.str());
     }
+}
+
+// Realiza uno o varios calculos con cores logicos en paralelo.
+void Interface::planificador() {
+    // Leemos las variables de entorno
+    std::string instructionsPath = getenv("INSTRUCTIONS_PATH");
+    std::string resultPath = getenv("RESULT_PATH");
+    std::string cantCores = getenv("CANT_CORES");
+    std::string distributorPath = getenv("DISTRIBUTOR_PATH");
+    std::string planificatorPath = getenv("PLANIFICATOR_PATH");
+    std::string corePath = getenv("CORE_PATH");
+
+    // Validamos la existencia de las variables de entorno
+    if (instructionsPath.empty() && resultPath.empty() && cantCores.empty() && distributorPath.empty() && planificatorPath.empty() && corePath.empty()){
+        showMessageOutput("No se encontraron las variables de entorno necesarias");
+        return;
+    }
+
+    // Validamos la existencia de los paths necesarios
+    if (!std::filesystem::exists(instructionsPath) && !std::filesystem::exists(corePath) && !std::filesystem::exists(planificatorPath) && !std::filesystem::exists(distributorPath) && !std::filesystem::exists(corePath + "/core")){
+        showMessageOutput("No fue posible ejecutar. Rutas incorrectas");
+        return;
+    }
+
+
+    char buffer[64];
+    wclear(output_win);  // Limpiar la ventana de salida
+    box(output_win, ' ', '#');  // Dibujar el borde de la ventana
+    mvwprintw(output_win, 1, 1, "Ejecutando....");
+    wrefresh(output_win);  // Refrescar la ventana de salida para mostrar el prompt
+
+    wclear(input_win);  // Limpiar la ventana de comandos
+    box(input_win, 0, 0);  // Dibujar el borde de la ventana
+    mvwprintw(input_win, 1, 1, " ");
+    wrefresh(input_win);  // Refrescar la ventana de comandos para mostrar el prompt
+
+    // Realizamos la llamada la sistema
+    std::string call = planificatorPath + " " + instructionsPath + " " + distributorPath + " " + resultPath + " " + corePath + " " + cantCores;
+    std::string result = executeWithBuffer(call);
+    showMessageOutput("Listo!\nEl archivo con los resultados esta en: " + result + "\nIngrese cualquier cosa para continuar");
+    wgetnstr(input_win, buffer, 64);
+    showMessageOutput("");
+
 }

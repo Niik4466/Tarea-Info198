@@ -60,6 +60,7 @@ class Interface {
         void parallelCountWithThreads();
         void createInvertedIndex();
         void performanceAnalysis();
+        void planificador();
 
         void insertUsers();
         void listUsers();

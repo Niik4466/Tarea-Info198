@@ -88,7 +88,7 @@ int main(int argc, char** argv){
   // Creamos los threads individualmente, asignandole el trabajo a cada uno (Funcion que ejecutaran)
   for (int i = 0; i < cantThreads; i++)
     threads.emplace_back(threadWork, i, std::ref(pathQueue), std::ref(pathQueueMutex), childrenPath, outputPath, idPath, extension, stopWordsPath);
-  
+
   // Aniadimos los threads al hilo principal.
   for (std::thread& thread : threads)
     if (thread.joinable()) thread.join();
