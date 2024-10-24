@@ -723,7 +723,7 @@ void Interface::planificador() {
     char buffer[64];
     wclear(output_win);  // Limpiar la ventana de salida
     box(output_win, ' ', '#');  // Dibujar el borde de la ventana
-    mvwprintw(output_win, 1, 1, "Ejecutando....");
+    mvwprintw(output_win, 1, 1, ("Ejecutando con " + cantCores + " cores....").c_str());
     wrefresh(output_win);  // Refrescar la ventana de salida para mostrar el prompt
 
     wclear(input_win);  // Limpiar la ventana de comandos
@@ -734,8 +734,8 @@ void Interface::planificador() {
     // Realizamos la llamada la sistema
     std::string call = planificatorPath + " " + instructionsPath + " " + distributorPath + " " + resultPath + " " + corePath + " " + cantCores;
     std::string result = executeWithBuffer(call);
-    showMessageOutput("Listo!\nEl archivo con los resultados esta en: " + result + "\nIngrese cualquier cosa para continuar");
+    showMessageOutput("Listo!, se ha ejecutado con " + cantCores + " cores\nEl archivo con los resultados esta en: " + result + "\nIngrese cualquier cosa para continuar");
     wgetnstr(input_win, buffer, 64);
     showMessageOutput("");
-
+    
 }

@@ -35,7 +35,10 @@ int main(int argc, char** argv) {
   // Borramos el archivo anterior que almacenaba resultados (si existía)
   system(("rm " + results_path + " 2> /dev/null").c_str());
 
-  // Borramos los archivos temporales
+  // Borramos los archivos temporales de los cores
+  for(int i = 0; i < cant_cores; i++){
+    system(("rm " + core_path + "/." + std::to_string(i) + " 2> /dev/null").c_str());
+  }
 
   // Abrimos el archivo de instrucciones
   std::ifstream instructions_file(instructions_path);
