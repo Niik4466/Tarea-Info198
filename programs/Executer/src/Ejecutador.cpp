@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 
     // Llamar al script Python para generar el gráfico
     std::ostringstream oss;
-    oss << "python " << analyzerPath << "/Analisador.py " << csvFileName << " " << graphPath;
+    oss << "python3 " << analyzerPath << "/Analisador.py " << csvFileName << " " << graphPath;
     std::string command = oss.str();
     int result = std::system(command.c_str());
     if (result != 0) {

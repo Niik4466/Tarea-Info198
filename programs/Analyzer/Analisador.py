@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-
+import numpy as np
 
 def generate_graph(csv_file, graph_path):
     # Leer el archivo CSV
@@ -54,10 +54,10 @@ def generate_graph(csv_file, graph_path):
     # Segundo subplot: Boxplot
     ax2 = fig.add_subplot(gs[1])
     
-    # Crear boxplot
+    # Crear boxplot con 'labels' en lugar de 'tick_labels'
     bp = ax2.boxplot([data[data['Threads'] == t]['Time'] for t in thread_values],
                      positions=thread_values,
-                     tick_labels=thread_values,
+                     labels=thread_values,  # Cambiado de tick_labels a labels
                      patch_artist=True)
     
     # Personalizar el boxplot
