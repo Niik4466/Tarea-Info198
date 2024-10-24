@@ -84,7 +84,7 @@ def generate_graph(csv_file, graph_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python Analisador.py <csv_file> <graph_path>")
+        print("Uso: python3 Analisador.py <csv_file> <graph_path>")
         sys.exit(1)
 
     csv_file = sys.argv[1]

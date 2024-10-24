@@ -5,11 +5,12 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
 ## Requisitos
 * **Sistema Operativo**: Linux, macOS.
 * **Compilador**: G++ en su version 14.2.1
+* **Python**: Version 3.12.2
 * **Librerías**:
   - **ncurses** en C++: Para manejo de interfaces de texto en la terminal.
   - **C++ Standard Library**: Incluye `<iostream>`, `<fstream>`, `<map>`, `<string>`, `<cstdlib>`, `<vector>`, `<regex>`, `<unistd.h>`, y `<cstring>`.
- - **Pandas** en Python: para manejo de csv.
- - **Matplotlib** en Python: para elaborar graficos.
+  - **Pandas** en Python: para manejo de csv version 2.1.4.
+  - **Matplotlib** en Python: para elaborar graficos version 3.6.3.
 
 ## Instalacion / Compilacion
 * **Instalar las dependencias**:
@@ -178,3 +179,19 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
          ```bash
          ./core <id_core> <operacion> <numero1> <numero2>
          ```
+   7. **Ejecutador**:
+      - **Descripcion**: Ejecuta el programa `text_counter_threads` una cantidad de veces dictadas por la variable de entorno `REPETICIONES` con un numero diferente de threads indicados en la variable de entorno `ARRAY_THREADS`. Toma el tiempo de cada ejecucion y lo registra en un archivo .csv que queda alojado en `DATOS_PATH`, luego de esto llama al programa `Analisador.py` para que se ejecute. 
+      
+      - **Ruta**: definida en `EJECUTADOR_PATH`
+      - **Uso**: Se ejecuta como:
+         ```bash
+         ./ejecutador  <textCounterThreadsPath> <archivosDir> <outputDir> <idPath> <extension> <stopWordsPath> <repetitions> <datosPath> <analizerPath> <graphPath> <threadCount>
+         ```
+   8. **Analisador**:
+      -**Descripcion**: Programa python que grafica los tiempos de ejecucion del programa `text_counter_treads` con la cantidad de threads en que este fue ejecutado multiples veces por el programa `ejecutador`. Este programa recive un archivo .csv que obtiene de `DATOS_PATH/<nombre_archivo.csv>` y deja guardado el grafico en `GRAFICOS_PATH`.
+
+      -**Ruta**: definida en `ANALISADOR_PATH`.
+      -**Uso**: Se ejecuta como:
+      ```bash
+      python Analisador.py <csv_file> <graph_path>
+      ```
