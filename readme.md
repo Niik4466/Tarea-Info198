@@ -11,6 +11,7 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
   - **C++ Standard Library**: Incluye `<iostream>`, `<fstream>`, `<map>`, `<string>`, `<cstdlib>`, `<vector>`, `<regex>`, `<unistd.h>`, y `<cstring>`.
   - **Pandas** en Python: para manejo de csv version 2.1.4.
   - **Matplotlib** en Python: para elaborar graficos version 3.6.3.
+  - **Tkinter** en Python: para interfaces gráficas de usuario (GUI) versión 8.6.
 
 ## Instalacion / Compilacion
 * **Instalar las dependencias**:
@@ -18,11 +19,11 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
      ```bash
      sudo apt-get update
      sudo apt-get install libncurses5-dev libncursesw5-dev python3 python3-pip
-     pip3 install pandas matplotlib
+     pip3 install pandas matplotlib tk
      ```
    - En **Linux (Arch Linux)**:
      ```bash
-     sudo pacman -Sy ncurses python python-pip python-pandas python-matplotlib
+     sudo pacman -Sy ncurses python python-pip python-pandas python-matplotlib python-tk
      ```
    - En **macOS** (con Homebrew):
      ```bash
