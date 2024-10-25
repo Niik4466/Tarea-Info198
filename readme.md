@@ -188,10 +188,10 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
          ./ejecutador  <textCounterThreadsPath> <archivosDir> <outputDir> <idPath> <extension> <stopWordsPath> <repetitions> <datosPath> <analizerPath> <graphPath> <threadCount>
          ```
    8. **Analisador**:
-      -**Descripcion**: Programa python que grafica los tiempos de ejecucion del programa `text_counter_treads` con la cantidad de threads en que este fue ejecutado multiples veces por el programa `ejecutador`. Este programa recive un archivo .csv que obtiene de `DATOS_PATH/<nombre_archivo.csv>` y deja guardado el grafico en `GRAFICOS_PATH`.
+      - **Descripcion**: Programa python que grafica los tiempos de ejecucion del programa `text_counter_treads` con la cantidad de threads en que este fue ejecutado multiples veces por el programa `ejecutador`. Este programa recive un archivo .csv que obtiene de `DATOS_PATH/<nombre_archivo.csv>` y deja guardado el grafico en `GRAFICOS_PATH`.
 
-      -**Ruta**: definida en `ANALISADOR_PATH`.
-      -**Uso**: Se ejecuta como:
-      ```bash
-      python Analisador.py <csv_file> <graph_path>
-      ```
+      - **Ruta**: definida en `ANALISADOR_PATH`.
+      - **Uso**: Se ejecuta como:
+         ```bash
+         python Analisador.py <csv_file> <graph_path>
+         ```

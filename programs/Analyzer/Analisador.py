@@ -54,10 +54,10 @@ def generate_graph(csv_file, graph_path):
     # Segundo subplot: Boxplot
     ax2 = fig.add_subplot(gs[1])
     
-    # Crear boxplot con 'labels' en lugar de 'tick_labels'
+    # Crear boxplot con 'tick_labels' en lugar de 'labels'
     bp = ax2.boxplot([data[data['Threads'] == t]['Time'] for t in thread_values],
                      positions=thread_values,
-                     labels=thread_values,  # Cambiado de tick_labels a labels
+                     tick_labels=thread_values,  # Cambiado de labels a tick_labels
                      patch_artist=True)
     
     # Personalizar el boxplot
@@ -80,13 +80,41 @@ def generate_graph(csv_file, graph_path):
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     
     # Mostrar el gráfico
+    manager = plt.get_current_fig_manager()
+    
+    # Obtener tamaño de la pantalla
+    screen_width = manager.window.winfo_screenwidth()
+    screen_height = manager.window.winfo_screenheight()
+    
+    # Calcular tamaño y posición de la ventana
+    window_width = screen_width // 2
+    window_height = screen_height
+    position_right = screen_width // 2
+    position_top = 0
+    
+    manager.window.wm_geometry(f"{window_width}x{window_height}+{position_right}+{position_top}")  # Posicionar en la mitad derecha
+    
+    # Cerrar la ventana al presionar cualquier tecla
+    def on_key(event):
+        plt.close(fig)
+    
+    manager.window.bind("<Key>", on_key)
+    
     plt.show()
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Uso: python3 Analisador.py <csv_file> <graph_path>")
+        with open(os.devnull, 'w') as f:
+            sys.stderr = f
+            sys.stdout = f
+            print("Uso: python Analisador.py <csv_file> <graph_path>")
         sys.exit(1)
 
     csv_file = sys.argv[1]
     graph_path = sys.argv[2]
-    generate_graph(csv_file, graph_path)
+    
+    # Redirigir la salida estándar y de errores a os.devnull
+    with open(os.devnull, 'w') as f:
+        sys.stderr = f
+        sys.stdout = f
+        generate_graph(csv_file, graph_path)
