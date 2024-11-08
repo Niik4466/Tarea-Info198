@@ -14,11 +14,20 @@ int main (int argc, char** argv){
         printf("No se encontró la ruta del índice invertido\n");
         exit(EXIT_FAILURE);
     }
+
     std::string motorCommand = "programs/Motor_de_busqueda/motor.sh " + invertedIndexPath + " &";
     system(motorCommand.c_str());
 
+    sleep(1);
+
     // Iniciar cache
-    std::string cacheCommand = "programs/Cache/cache &";
+    std::string memorySize = getenv("MEMORY_SIZE") ? getenv("MEMORY_SIZE") : "";
+    if (memorySize.empty()) {
+        printf("No se encontró la variable de entorno MEMORY_SIZE\n");
+        exit(EXIT_FAILURE);
+    }
+
+    std::string cacheCommand = "programs/Cache/cache " + memorySize + " &";
     system(cacheCommand.c_str());
 
     std::string phrase;

@@ -7,6 +7,9 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 class Interface {
 private:
@@ -15,10 +18,10 @@ private:
     WINDOW* output_win;
     WINDOW* response_win;  // Nueva ventana para respuestas
     int socket_fd;
+    struct sockaddr_in server_addr; // Dirección del servidor
     std::map<int, std::string> file_names; // Mapa para ID -> nombre de archivo
 
     void loadIDFile();
-    bool connectToCache();
 
 public:
     Interface();

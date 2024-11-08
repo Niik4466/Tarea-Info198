@@ -1,8 +1,7 @@
 #include "buscador.h"
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <unistd.h>
 #include <cstdlib>
+#include <cstring>
+#include <iostream>
 
 #define IP "127.0.0.1"
 #define PORT_SEARCH 2020
@@ -35,26 +34,6 @@ void Interface::loadIDFile() {
     file.close();
 }
 
-bool Interface::connectToCache() {
-    socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_fd == -1) {
-        showMessageOutput("Error creando socket");
-        return false;
-    }
-
-    struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT_SEARCH);
-    server_addr.sin_addr.s_addr = inet_addr(IP);
-
-    if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
-        showMessageOutput("Error conectando al cache");
-        close(socket_fd);
-        return false;
-    }
-    return true;
-}
-
 Interface::Interface() {
     initscr();
     cbreak();
@@ -72,7 +51,21 @@ Interface::Interface() {
     loadIDFile();
 
     // Conectar al cache
-    if (!connectToCache()) {
+    socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (socket_fd == -1) {
+        showMessageOutput("Error creando socket");
+        endwin();
+        exit(1);
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT_SEARCH);
+    server_addr.sin_addr.s_addr = inet_addr(IP);
+    memset(&(server_addr.sin_zero), '\0', 8); // Zero the rest of the struct
+
+    if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
+        showMessageOutput("Error conectando al cache");
+        close(socket_fd);
         endwin();
         exit(1);
     }
@@ -92,6 +85,7 @@ Interface::Interface() {
 void Interface::interfaceInputOutput() {
     char buffer[1024];
     char response[1024];
+    std::string message;
 
     while (true) {
         wclear(input_win);
@@ -106,25 +100,27 @@ void Interface::interfaceInputOutput() {
             interfaceExit();
             break;
         }
-
+        
         // Enviar consulta al cache
-        if (send(socket_fd, input.c_str(), input.length(), 0) == -1) {
+        if (send(socket_fd, (input + "\n").c_str(), input.length() + 1, 0) == -1) {
             showMessageOutput("Error enviando mensaje");
             continue;
         }
 
         // Recibir respuesta
         ssize_t bytes_received = recv(socket_fd, response, sizeof(response)-1, 0);
+        message = response;
         if (bytes_received > 0) {
             response[bytes_received] = '\0';
             showResponse(response);
+            showMessageOutput(message);
         } else {
             showMessageOutput("No se recibió respuesta del cache");
         }
-        
-        showMessageOutput("Búsqueda completada");
     }
 }
+
+// Añade manejo de excepciones al parsear IDs en showResponse
 
 void Interface::showResponse(const std::string& response) {
     wclear(response_win);
@@ -138,11 +134,25 @@ void Interface::showResponse(const std::string& response) {
         // Parsear la respuesta y mapear IDs a nombres
         size_t pos = line.find(';');
         if (pos != std::string::npos) {
-            int id = std::stoi(line.substr(0, pos));
-            std::string score = line.substr(pos+1);
-            std::string filename = file_names.count(id) ? file_names[id] : "Archivo Desconocido";
-            mvwprintw(response_win, y++, 1, "%s: %s", filename.c_str(), score.c_str());
-            if (y >= (getmaxy(response_win) - 1)) break; // Evitar overflow
+            try {
+                int id = std::stoi(line.substr(0, pos));
+                std::string score = line.substr(pos + 1);
+                std::string filename = file_names.count(id) ? file_names[id] : "Archivo Desconocido";
+                mvwprintw(response_win, y++, 1, "%s: %s", filename.c_str(), score.c_str());
+                if (y >= (getmaxy(response_win) - 1)) break; // Evitar overflow
+            }
+            catch (const std::invalid_argument& e) {
+                showMessageOutput("Error: Formato de respuesta inválido.");
+                break;
+            }
+            catch (const std::out_of_range& e) {
+                showMessageOutput("Error: ID fuera de rango.");
+                break;
+            }
+        }
+        else {
+            showMessageOutput("Error: Separador ';' no encontrado.");
+            break;
         }
     }
     wrefresh(response_win);

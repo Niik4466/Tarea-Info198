@@ -747,12 +747,12 @@ void Interface::planificador() {
 // Ejecuta el buscador
 void Interface::Buscador() {
     std::string buscadorPath = getenv("BUSCADOR_PATH") ? getenv("BUSCADOR_PATH") : "";
-    if(buscadorPath.empty()) {
-        showMessageOutput("No se encontró la ruta del programa buscador");
+    std::string mapaArchivo = getenv("MAPA_ARCHIVO") ? getenv("MAPA_ARCHIVO") : "";
+    if(buscadorPath.empty() || mapaArchivo.empty()) {
+        showMessageOutput("No se encontró la ruta del programa buscador o la variable de entorno MAPA_ARCHIVO");
         return;
     }
-    std::string call = buscadorPath + "/buscador";
+    std::string call = buscadorPath + "/buscador " + mapaArchivo + "/ID.txt";
 
     system(call.c_str());
-
 }

@@ -10,7 +10,7 @@ fuser -k 2021/tcp > /dev/null
 coproc socket { nc -lk -p 2021; }
 nc_output="${socket[0]}"
 nc_input="${socket[1]}"
-TOPK=3
+TOPK="$2"
 
 
 # Leer del pipe de entrada
