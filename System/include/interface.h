@@ -15,6 +15,9 @@
 #include <iostream>
 #include <filesystem>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 class Interface {
     private:
         WINDOW* output_win;
@@ -61,6 +64,7 @@ class Interface {
         void createInvertedIndex();
         void performanceAnalysis();
         void planificador();
+        void Buscador();
 
         void insertUsers();
         void listUsers();

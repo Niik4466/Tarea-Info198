@@ -213,6 +213,10 @@ void Interface::setOptions(User user, std::vector<User> users){
     this->optionsStrings.push_back(message);
     i++;
 
+    this->options.push_back(&Interface::Buscador);
+    sprintf(message, "%i. Buscador", 20);
+    this->optionsStrings.push_back(message);
+
     interfaceMenu();
 }
 
@@ -738,4 +742,17 @@ void Interface::planificador() {
     wgetnstr(input_win, buffer, 64);
     showMessageOutput("");
     
+}
+
+// Ejecuta el buscador
+void Interface::Buscador() {
+    std::string buscadorPath = getenv("BUSCADOR_PATH") ? getenv("BUSCADOR_PATH") : "";
+    if(buscadorPath.empty()) {
+        showMessageOutput("No se encontró la ruta del programa buscador");
+        return;
+    }
+    std::string call = buscadorPath + "/buscador";
+
+    system(call.c_str());
+
 }

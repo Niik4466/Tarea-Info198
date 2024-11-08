@@ -3,10 +3,23 @@
 #include "stringManagment.h"
 #include "utils.h"
 #include "interface.h"
+#include <cstdlib>
 
 int main (int argc, char** argv){
-
     setEnv(); //seteamos las variables de entorno    
+
+    // Iniciar motor.sh
+    std::string invertedIndexPath = getenv("INVERTED_INDEX") ? getenv("INVERTED_INDEX") : "";
+    if (invertedIndexPath.empty()) {
+        printf("No se encontró la ruta del índice invertido\n");
+        exit(EXIT_FAILURE);
+    }
+    std::string motorCommand = "programs/Motor_de_busqueda/motor.sh " + invertedIndexPath + " &";
+    system(motorCommand.c_str());
+
+    // Iniciar cache
+    std::string cacheCommand = "programs/Cache/cache &";
+    system(cacheCommand.c_str());
 
     std::string phrase;
     std::vector<int> list;
