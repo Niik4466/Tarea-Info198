@@ -75,6 +75,7 @@ Interface::Interface() {
     mvwprintw(header_win, 1, 1, "Programa Buscador");
     mvwprintw(header_win, 2, 1, "###############################");
     mvwprintw(header_win, 3, 1, "pid: %d", getpid());
+    mvwprintw(header_win, 4, 1, "Ingrese 'SALIR AHORA' para terminar");
 
     wrefresh(header_win);
     wrefresh(response_win);
@@ -86,7 +87,6 @@ void Interface::interfaceInputOutput() {
     char buffer[1024];
     char response[1024];
     std::string message;
-
     while (true) {
         wclear(input_win);
         box(input_win, 0, 0);
@@ -95,7 +95,6 @@ void Interface::interfaceInputOutput() {
         
         wgetnstr(input_win, buffer, sizeof(buffer));
         std::string input(buffer);
-
         if (input == "SALIR AHORA") {
             interfaceExit();
             break;
@@ -109,11 +108,11 @@ void Interface::interfaceInputOutput() {
 
         // Recibir respuesta
         ssize_t bytes_received = recv(socket_fd, response, sizeof(response)-1, 0);
-        message = response;
         if (bytes_received > 0) {
             response[bytes_received] = '\0';
-            showResponse(response);
-            showMessageOutput(message);
+            message = response;
+            showResponse(message); // Debugging output
+            //showResponse(message);
         } else {
             showMessageOutput("No se recibió respuesta del cache");
         }
@@ -127,34 +126,10 @@ void Interface::showResponse(const std::string& response) {
     box(response_win, 0, 0);
     mvwprintw(response_win, 1, 1, "Resultados:");
 
-    std::stringstream ss(response);
-    std::string line;
-    int y = 2;
-    while (std::getline(ss, line)) {
-        // Parsear la respuesta y mapear IDs a nombres
-        size_t pos = line.find(';');
-        if (pos != std::string::npos) {
-            try {
-                int id = std::stoi(line.substr(0, pos));
-                std::string score = line.substr(pos + 1);
-                std::string filename = file_names.count(id) ? file_names[id] : "Archivo Desconocido";
-                mvwprintw(response_win, y++, 1, "%s: %s", filename.c_str(), score.c_str());
-                if (y >= (getmaxy(response_win) - 1)) break; // Evitar overflow
-            }
-            catch (const std::invalid_argument& e) {
-                showMessageOutput("Error: Formato de respuesta inválido.");
-                break;
-            }
-            catch (const std::out_of_range& e) {
-                showMessageOutput("Error: ID fuera de rango.");
-                break;
-            }
-        }
-        else {
-            showMessageOutput("Error: Separador ';' no encontrado.");
-            break;
-        }
-    }
+    // Convert response to string and print it
+    std::string responseStr = response;
+    mvwprintw(response_win, 2, 1, "Mensaje recibido: %s", responseStr.c_str());
+
     wrefresh(response_win);
 }
 
