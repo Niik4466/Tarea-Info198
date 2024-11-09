@@ -14,7 +14,7 @@ std::unordered_map<int, std::string> generateIDMap(const std::string& idFilePath
 
     if (!file.is_open()) {
         std::cerr << "Error: No se pudo abrir el archivo " << idFilePath << std::endl;
-        return idMap;
+        exit(EXIT_FAILURE);
     }
 
     std::string line;
@@ -34,6 +34,22 @@ std::unordered_map<int, std::string> generateIDMap(const std::string& idFilePath
     return idMap;
 }
 
+int checkPortOpen(const char* ip, int port) {
+        int sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (sock == -1) {
+            return 0;
+        }
+
+        struct sockaddr_in server;
+        server.sin_family = AF_INET;
+        server.sin_port = htons(port);
+        server.sin_addr.s_addr = inet_addr(ip);
+
+        int result = connect(sock, (struct sockaddr*)&server, sizeof(server));
+        close(sock);
+
+        return result == 0 ? 1 : 0;
+}
 // Implementación de los métodos de la clase Interface
 
 void Interface::loadIDFile() {
@@ -41,7 +57,7 @@ void Interface::loadIDFile() {
     std::string idPath = env_p ? std::string(env_p) : "";
     if(idPath.empty()) {
         showMessageOutput("Error: No se encontró la ruta del archivo ID.txt");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     file_names = generateIDMap(idPath);
@@ -63,24 +79,25 @@ Interface::Interface() {
     // Cargar archivo ID.txt
     loadIDFile();
 
-    // Conectar al cache
+    // Crear el Socket
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_fd == -1) {
         showMessageOutput("Error creando socket");
         endwin();
-        exit(1);
+        exit(EXIT_FAILURE);
+
     }
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT_SEARCH);
     server_addr.sin_addr.s_addr = inet_addr(IP);
     memset(&(server_addr.sin_zero), '\0', 8); // Zero the rest of the struct
-
+    // Conectar al Cache
     if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
         showMessageOutput("Error conectando al cache");
         close(socket_fd);
         endwin();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // Inicializar ventanas
@@ -124,7 +141,7 @@ void Interface::interfaceInputOutput() {
         if (bytes_received > 0) {
             response[bytes_received] = '\0';
             message = response;
-            showResponse(response); // Debugging output
+            showResponse(response);
         } else {
             showMessageOutput("No se recibió respuesta del cache");
         }
@@ -132,7 +149,6 @@ void Interface::interfaceInputOutput() {
 }
 
 // Añade manejo de excepciones al parsear IDs en showResponse
-
 void Interface::showResponse(const std::string& response) {
     wclear(response_win);
     box(response_win, 0, 0);
@@ -195,5 +211,8 @@ void Interface::showMessageOutput(const std::string& message) {
 int main() {
     Interface interface;
     interface.interfaceInputOutput();
+     if (checkPortOpen(IP, PORT_SEARCH)) {
+        return 1;
+    }
     return 0;
 }

@@ -752,7 +752,11 @@ void Interface::Buscador() {
         showMessageOutput("No se encontró la ruta del programa buscador o la variable de entorno MAPA_ARCHIVO");
         return;
     }
-    std::string call = buscadorPath + "/buscador " + mapaArchivo + "/ID.txt";
 
-    system(call.c_str());
+    std::string call = buscadorPath + "/buscador \"" + mapaArchivo + "\"/ID.txt 2> logsBuscador.txt";
+    int result = system(call.c_str());
+    if (result == 0)
+        showMessageOutput("Buscador ejecutado con exito!");
+    else
+        showMessageOutput("Buscador ejecutadon't");
 }

@@ -13,7 +13,7 @@
 #define IP "127.0.0.1"          // Localhost
 #define PORT_SEARCH_ENGINE 2021 // Puerto en el que escucha el proceso "motor.sh"
 #define PORT_SEARCH 2020        // Puerto a abrir para que el proceso "busqueda" escuche las respuestas
-#define VERBOSE 1               // Para imprimir mensajes de debug
+#define VERBOSE 0               // Para imprimir mensajes de debug
 
 // Busca un resultado almacenado en el hashmap llamado `cache`, retorna "" si no fue encontrada la respuesta
 std::string getAnswerFromHash(const std::string& message, const std::unordered_map<std::string, std::string>& cache);

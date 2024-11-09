@@ -8,26 +8,32 @@
 int main (int argc, char** argv){
     setEnv(); //seteamos las variables de entorno    
 
+    // Eliminamos los puertos 2020 y 2021 si estan abiertos
+    system("fuser -k '2020/tcp' && fuser -k '2021/tcp'");
+
     // Iniciar motor.sh
     std::string invertedIndexPath = getenv("INVERTED_INDEX") ? getenv("INVERTED_INDEX") : "";
+    std::string topk = getenv("TOPK") ? getenv("TOPK") : "";
+    std::string motor_path = getenv("MOTOR_DE_BUSQUEDA_PATH") ? getenv("MOTOR_DE_BUSQUEDA_PATH") : "";
     if (invertedIndexPath.empty()) {
         printf("No se encontró la ruta del índice invertido\n");
         exit(EXIT_FAILURE);
     }
 
-    std::string motorCommand = "programs/Motor_de_busqueda/motor.sh " + invertedIndexPath + " &";
+    std::string motorCommand = motor_path + "/motor.sh \"" + invertedIndexPath +"/.txt.INDEX" + "\" " + topk + " & 2> logsMotor.txt";
     system(motorCommand.c_str());
 
     sleep(1);
 
     // Iniciar cache
     std::string memorySize = getenv("MEMORY_SIZE") ? getenv("MEMORY_SIZE") : "";
+    std::string cache_path = getenv("CACHE_PATH") ? getenv("CACHE_PATH") : "";
     if (memorySize.empty()) {
         printf("No se encontró la variable de entorno MEMORY_SIZE\n");
         exit(EXIT_FAILURE);
     }
 
-    std::string cacheCommand = "programs/Cache/cache " + memorySize + " &";
+    std::string cacheCommand = cache_path + "/cache " + memorySize + " & 2> logsCache.txt";
     system(cacheCommand.c_str());
 
     std::string phrase;
