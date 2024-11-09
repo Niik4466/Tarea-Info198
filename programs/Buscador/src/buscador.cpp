@@ -209,10 +209,12 @@ void Interface::showMessageOutput(const std::string& message) {
 }
 
 int main() {
+    //if (checkPortOpen(IP, PORT_SEARCH)) {
+    //     return 1;
+    // }
+    
     Interface interface;
     interface.interfaceInputOutput();
-     if (checkPortOpen(IP, PORT_SEARCH)) {
-        return 1;
-    }
+
     return 0;
 }

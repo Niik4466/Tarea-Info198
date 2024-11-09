@@ -753,10 +753,10 @@ void Interface::Buscador() {
         return;
     }
 
-    std::string call = buscadorPath + "/buscador \"" + mapaArchivo + "\"/ID.txt 2> logsBuscador.txt";
+    std::string call = buscadorPath + "/buscador \"" + mapaArchivo + "/ID.txt\" > logsBuscador.txt";
     int result = system(call.c_str());
     if (result == 0)
         showMessageOutput("Buscador ejecutado con exito!");
     else
-        showMessageOutput("Buscador ejecutadon't");
+        showMessageOutput("Buscador no disponible");
 }

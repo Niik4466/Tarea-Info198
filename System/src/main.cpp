@@ -9,7 +9,7 @@ int main (int argc, char** argv){
     setEnv(); //seteamos las variables de entorno    
 
     // Eliminamos los puertos 2020 y 2021 si estan abiertos
-    system("fuser -k '2020/tcp' && fuser -k '2021/tcp'");
+    //system("fuser -k '2020/tcp' && fuser -k '2021/tcp'");
 
     // Iniciar motor.sh
     std::string invertedIndexPath = getenv("INVERTED_INDEX") ? getenv("INVERTED_INDEX") : "";
@@ -20,7 +20,7 @@ int main (int argc, char** argv){
         exit(EXIT_FAILURE);
     }
 
-    std::string motorCommand = motor_path + "/motor.sh \"" + invertedIndexPath +"/.txt.INDEX" + "\" " + topk + " & 2> logsMotor.txt";
+    std::string motorCommand = motor_path + "/motor.sh \"" + invertedIndexPath +"/.txt.INDEX" + "\" " + topk + " & > logsMotor.txt";
     system(motorCommand.c_str());
 
     sleep(1);
@@ -33,7 +33,7 @@ int main (int argc, char** argv){
         exit(EXIT_FAILURE);
     }
 
-    std::string cacheCommand = cache_path + "/cache " + memorySize + " & 2> logsCache.txt";
+    std::string cacheCommand = cache_path + "/cache " + memorySize + " & > logsCache.txt";
     system(cacheCommand.c_str());
 
     std::string phrase;

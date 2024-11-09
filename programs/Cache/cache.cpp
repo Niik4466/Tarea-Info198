@@ -118,8 +118,8 @@ int main(int argc, char** argv) {
             fputs_unlocked("Error al recibir datos del cliente.\n", stderr);
         } 
         else {
+            buffer[bytesRead] = '\0';
             if (VERBOSE){
-                buffer[bytesRead] = '\0';
                 printf("Mensaje del cliente: %s\n", buffer); 
             }
         }
@@ -140,10 +140,10 @@ int main(int argc, char** argv) {
             
             // Recibir datos desde engineSocket
             ssize_t bytesReceived = recv(engineServerSocket, buffer, sizeof(buffer) - 1, 0); // -1 para reservar espacio para el terminador nulo
+            buffer[bytesReceived] = '\0';
             if (VERBOSE){
                 if (bytesReceived < 0) 
                     std::cout << "Error al recibir datos del servidor" << std::endl;
-                
                 else {
                     buffer[bytesReceived] = '\0'; // Asegurar que el buffer esté terminado en nulo
                     std::cout << "Respuesta del servidor: " << buffer << std::endl; // Imprimir la respuesta
