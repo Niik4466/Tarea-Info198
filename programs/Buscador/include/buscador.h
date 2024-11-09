@@ -4,7 +4,7 @@
 #include <ncurses.h>
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <fstream>
 #include <sstream>
 #include <arpa/inet.h>
@@ -16,10 +16,10 @@ private:
     WINDOW* input_win;
     WINDOW* header_win;
     WINDOW* output_win;
-    WINDOW* response_win;  // Nueva ventana para respuestas
+    WINDOW* response_win;
     int socket_fd;
-    struct sockaddr_in server_addr; // Dirección del servidor
-    std::map<int, std::string> file_names; // Mapa para ID -> nombre de archivo
+    struct sockaddr_in server_addr;
+    std::unordered_map<int, std::string> file_names; // Cambiado de map a unordered_map
 
     void loadIDFile();
 

@@ -2,9 +2,37 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <unordered_map>
 
 #define IP "127.0.0.1"
 #define PORT_SEARCH 2020
+
+// Función para generar un mapa de ID a nombre de archivo
+std::unordered_map<int, std::string> generateIDMap(const std::string& idFilePath) {
+    std::unordered_map<int, std::string> idMap;
+    std::ifstream file(idFilePath);
+
+    if (!file.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo " << idFilePath << std::endl;
+        return idMap;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string name;
+        int id;
+        
+        // Lee el texto hasta el ; y luego el número
+        if (std::getline(ss, name, ';') && ss >> id) {
+            // Guarda el texto como valor y el número como clave
+            idMap[id] = name;
+        }
+    }
+
+    file.close();
+    return idMap;
+}
 
 // Implementación de los métodos de la clase Interface
 
@@ -16,22 +44,7 @@ void Interface::loadIDFile() {
         return;
     }
 
-    std::ifstream file(idPath);
-    if (!file.is_open()) {
-        showMessageOutput("Error: No se pudo abrir el archivo ID.txt");
-        return;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        std::string name;
-        int id;
-        if (std::getline(ss, name, ';') && ss >> id) {
-            file_names[id] = name;
-        }
-    }
-    file.close();
+    file_names = generateIDMap(idPath);
 }
 
 Interface::Interface() {
@@ -111,8 +124,7 @@ void Interface::interfaceInputOutput() {
         if (bytes_received > 0) {
             response[bytes_received] = '\0';
             message = response;
-            showResponse(message); // Debugging output
-            //showResponse(message);
+            showResponse(response); // Debugging output
         } else {
             showMessageOutput("No se recibió respuesta del cache");
         }
@@ -126,10 +138,43 @@ void Interface::showResponse(const std::string& response) {
     box(response_win, 0, 0);
     mvwprintw(response_win, 1, 1, "Resultados:");
 
-    // Convert response to string and print it
-    std::string responseStr = response;
-    mvwprintw(response_win, 2, 1, "Mensaje recibido: %s", responseStr.c_str());
+    // Separar la consulta de los resultados
+    size_t pos = response.find(';');
+    if (pos == std::string::npos) {
+        mvwprintw(response_win, 2, 1, "Formato de respuesta inválido");
+        wrefresh(response_win);
+        return;
+    }
 
+    std::string query = response.substr(0, pos);
+    std::string results = response.substr(pos + 1);
+
+    // Construir el nuevo mensaje
+    std::string formattedMessage = query;
+
+    // Procesar cada par (IDx,score)
+    size_t start = 0;
+    while ((start = results.find("(ID", start)) != std::string::npos) {
+        size_t idStart = start + 3;
+        size_t idEnd = results.find(",", idStart);
+        size_t scoreEnd = results.find(")", idStart);
+        
+        if (idEnd == std::string::npos || scoreEnd == std::string::npos) break;
+
+        // Extraer ID y puntaje
+        int id = std::stoi(results.substr(idStart, idEnd - idStart));
+        std::string score = results.substr(idEnd + 1, scoreEnd - idEnd - 1);
+
+        // Buscar nombre del archivo en el hashmap
+        auto it = file_names.find(id);
+        if (it != file_names.end()) {
+            formattedMessage += " (" + it->second + ",Puntaje: " + score + ")";
+        }
+
+        start = scoreEnd + 1;
+    }
+
+    mvwprintw(response_win, 2, 1, "Mensaje recibido: %s", formattedMessage.c_str());
     wrefresh(response_win);
 }
 
