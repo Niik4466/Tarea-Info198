@@ -1,11 +1,12 @@
 # Proyecto de Sistemas Operativos
 ## Descripcion
-Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas de un sistema operativo. El programa genera procesos hijos, ejecutando específicamente los procesos `textCounter`, `text_Counter_threads`, `process_planificator` y `Analyzer`. Cada uno ofrece funcionalidades distintas entre si.
+Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas de un sistema operativo. El programa genera procesos hijos, ejecutando específicamente los procesos `textCounter`, `text_Counter_threads`, `process_planificator`, `Analyzer` y `busqueda`. Cada uno ofrece funcionalidades distintas entre si.
 
 ## Requisitos
 * **Sistema Operativo**: Linux, macOS.
 * **Compilador**: G++ en su version 14.2.1
 * **Python**: Version 3.12.2
+* **netcat**: Variante openBSD
 * **Librerías**:
   - **ncurses** en C++: Para manejo de interfaces de texto en la terminal.
   - **C++ Standard Library**: Incluye `<iostream>`, `<fstream>`, `<map>`, `<string>`, `<cstdlib>`, `<vector>`, `<regex>`, `<unistd.h>`, y `<cstring>`.
@@ -19,27 +20,29 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
      ```bash
      sudo apt-get update
      sudo apt-get install libncurses5-dev libncursesw5-dev python3 python3-pip
-     pip3 install pandas matplotlib tk
+     pip3 install pandas matplotlib tk netcat-openbsd
      ```
    - En **Linux (Arch Linux)**:
      ```bash
-     sudo pacman -Sy ncurses python python-pip python-pandas python-matplotlib python-tk
+     sudo pacman -Syu ncurses python python-pip python-pandas python-matplotlib python-tk openbsd-netcat
      ```
    - En **macOS** (con Homebrew):
      ```bash
      brew install ncurses
      brew install python
+     brew install netcat
      pip3 install pandas matplotlib
      ```
 
 * **Compilar el programa**:
 
-   - Se ejecuta como
+   
+  * Se compila desde la carpeta raiz como:
    ```bash
    make
    ```
 ## Ejecucion
-  * Se compila desde la carpeta raiz como:
+  * Se ejecuta como
     ```bash
     /.prg -u <usuario> -p <clave> -t <frase> -v <vector> -n <numero>
     ```
@@ -101,7 +104,9 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
    6. Analisis de performance:
       - Ejecuta el proceso **Conteo paralelo con threads** una cantidad de `<REPETICIONES>` veces. Para cada cantidad de threads definida en `<ARRAY_THREADS>`.
       - Guarda el tiempo de ejecucion de cada programa en un archivo .csv y luego ejecuta un python para generar los graficos.
-      
+   7. Buscador:
+      - Ejecuta el proceso **Buscador**
+      - Busca palabras en el archivo .INDEX y muestra los archivos que tienen mas veces repetidas las palabras
 ### Variables de Entorno (.env)
 
    * El archivo `.env` contiene las siguientes variables de entorno que configuran el comportamiento del programa:
@@ -133,6 +138,11 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
       - **INSTRUCTIONS_PATH**: Ruta a las instrucciones ejecutadas por `PLANIFICADOR`
       - **RESULT_PATH**: Ruta a los resultados de la opcion `PLANIFICADOR`
       - **CANT_CORES**: Especifica la cantidad de cores con la que correra la opcion `PLANIFICADOR`
+      - **MEMORY_SIZE**: Indica cuanto espacio puede tener la cache del proceso `cache`
+      - **TOPK**: Indica el tope de palabras que son devueltas desde el proceso `motor`
+      - **BUSCADOR_PATH**: Indica la ruta al programa `buscador`
+      - **CACHE_PATH**: Indica la ruta al programa `cache`
+      - **MOTOR_DE_BUSQUEDA_PATH**: Indica la ruta al programa `motor`
       
 ### Programas Externos
 
@@ -195,4 +205,26 @@ Ofrece una interfaz de usuario y manejo de cuentas, con funcionalidades básicas
       - **Uso**: Se ejecuta como:
          ```bash
          python Analisador.py <csv_file> <graph_path>
+         ```
+   9. **Buscador**:
+      - **Descripcion**: Programa en c++ que se comunica mediante sockets con `cache`y con `motor` para realizar busquedas sobre el archivo Inverted_Index.
+      - **Ruta**: definida en `BUSCADOR_PATH`
+      - **Uso**: Se ejecuta como 
+         ```bash
+         ./buscador
+         ```
+   1. **Cache**:
+      - **Descripcion**: Ejecutado antes de lanzar la interfaz. Programa en c++ que se comunica con `motor`. Abre un socket en el puerto **2020** para establecer comunicacion con el proceso `buscador`. Ademas, contiene un hash que permite almacenar respuestas desde el `motor`
+      - **Ruta**: definida en `CACHE_PATH`
+      - **Uso**: Se ejecuta como
+         ```bash
+         ./cache <Limite de lineas de memoria>
+         ```
+   
+   1. **Motor de Busqueda**:
+      - **Descripcion**: Ejecutado antes de lanzar la interfaz. Script en bash que abre un socket en el puerto **2021** que utiliza el proceso `cache`para comunicarse y enviar peticiones. Este programa, dado una palabra como input, devuelve la cantidad de veces que la palabra se repite en la estructura inverted index de manera ordenada. Tomando en cuenta la variable `topk` que establece el limite de archivos que coinciden con la palabra. 
+      - **Ruta**: definida en `MOTOR_DE_BUSQUEDA_PATH`.
+      - **Uso**: Se ejecuta como:
+         ```bash
+         ./motor.sh <Path a la estructura de indices invertidos> <limite de archivos a entregar>
          ```
